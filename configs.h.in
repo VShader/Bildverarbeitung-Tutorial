@@ -1,0 +1,9 @@
+#ifndef CONFIGS_H
+#define CONFIGS_H
+
+namespace bv
+{
+constexpr const char* IMAGEPATH = "@images@/";
+}
+
+#endif //CONFIGS_H
