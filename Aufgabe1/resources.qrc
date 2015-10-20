@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/">
+        <file>ui/RGBchannels.qml</file>
+        <file>ui/RGBchannelsForm.ui.qml</file>
+    </qresource>
+</RCC>

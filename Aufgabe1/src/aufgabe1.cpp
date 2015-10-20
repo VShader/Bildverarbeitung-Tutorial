@@ -3,6 +3,10 @@
 #include <string>
 #include <algorithm>
 #include <array>
+
+#include <QApplication>
+#include <QQmlApplicationEngine>
+
 #include "configs.h"
 
 using namespace cv;
@@ -14,6 +18,11 @@ enum class RGB : size_t { r = 2, g = 1, b = 0 };
 
 int main(int argc, char** argv)
 {
+	QApplication app(argc, argv);
+	QQmlApplicationEngine engine(QUrl("qrc:/ui/RGBchannels.qml"));
+
+	//QQmlApplicationEngine
+	
 	//Aufgabe 1.1
 	Mat image = imread(std::string(IMAGEPATH) + "Aufgabe1.jpg", 1);
 	if (!image.data)
@@ -75,5 +84,5 @@ int main(int argc, char** argv)
 	imshow("Blaukanal - blau eingefärbt", bIm);
 
 	waitKey(0);
-	return 0;
+	return app.exec();
 }
