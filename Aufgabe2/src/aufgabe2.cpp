@@ -1,6 +1,7 @@
 #include <opencv2/opencv.hpp>
 #include <string>
 #include <algorithm>
+#include <array>
 #include "configs.h"
 
 using namespace cv;
@@ -27,8 +28,8 @@ int main(int argc, char** argv)
 	resize(image, image512, s);
 	cout << image512.channels();
 
-	Mat bgrImage;
-	split(image512, bgrImage);
+	array<Mat, 3> bgrImage;
+	split(image512, bgrImage.data());
 	
 	//namedWindow("Display Image", WINDOW_AUTOSIZE);
 	//imshow("Display Image", image512);

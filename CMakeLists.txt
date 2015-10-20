@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.3)
-project(BV_Praktikum1)
+project(BV_Praktikum)
 
 set(images
 	${CMAKE_CURRENT_SOURCE_DIR}/images
