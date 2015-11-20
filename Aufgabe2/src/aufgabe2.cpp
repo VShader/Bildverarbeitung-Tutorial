@@ -19,22 +19,31 @@ int main(int argc, char** argv)
 		std::cerr << "No image data \n";
 		return -1;
 	}
-	// 1. read width and heigh.
-	// 2. define max.
-	// 3. divide 512 with max
-	// 4. multiply result with width and heigh
-	auto maximum = std::max(image.rows, image.cols);
-	float factor = 512.0f / maximum;
-	Size s( (std::size_t)(image.cols * factor), (std::size_t)(image.rows * factor));
-	Mat image512;
-	resize(image, image512, s);
-	cout << image512.channels();
+	
+	image.shrink(512);
 
-	array<Mat, 3> bgrImage;
-	split(image512, bgrImage.data());
+	//array<Mat, 3> bgrImage;
+	//split(image, bgrImage.data());
+
+	auto cmy = image.toCMY();
+	auto hsv = image.toHSV();
+	auto lab = image.toLAB();
+	auto yiq = image.toYIQ();
+
+	using MatArray3 = std::array<cv::Mat, 3>;
+	MatArray3 bgrGrayImage;
+	cv::split(yiq, bgrGrayImage.data());
+
+	imshow("y", bgrGrayImage[0]);
+	imshow("i", bgrGrayImage[1]);
+	imshow("q", bgrGrayImage[2]);
 	
 	namedWindow("Display Image", WINDOW_AUTOSIZE);
-	imshow("Display Image", image512);
+	imshow("Display Image", image);
+	//imshow("HSV", hsv);
+	//imshow("CMY", cmy);
+	//imshow("LAB", lab);
+	imshow("yiq", yiq);
 	//imshow("Display Image", bgrImage.col(0));
 	waitKey(0);
 	return 0;
