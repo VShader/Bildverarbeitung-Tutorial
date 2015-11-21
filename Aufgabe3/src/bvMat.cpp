@@ -63,3 +63,43 @@ BVMat BVMat::toLAB()
 	cv::cvtColor(labMat, labMat, cv::COLOR_BGR2Lab);
 	return labMat;
 }
+
+std::array<std::size_t, 256> BVMat::makeHist()
+{
+	//check if grayscale, if not convert.
+	if(this->dims > 2)
+		cv::cvtColor(*this, *this, CV_BGR2GRAY);
+
+	std::array<std::size_t, 256> hist;
+	hist.fill(0);
+	for (int rowIt = 0; rowIt < this->rows; rowIt++)
+	{
+		for (int colIt = 0; colIt < this->cols; colIt++)
+		{
+			auto& pixel = this->at<uchar>(rowIt, colIt);
+			hist[pixel] += 1;
+		}
+	}
+	return hist;
+}
+
+std::array<double, 256> BVMat::makeNormalisedHist()
+{
+	array<double, 256> hist;
+	auto tmpHist = makeHist();
+	for (int i = 0; i < tmpHist.size(); ++i)
+	{
+		hist[i] = (double)tmpHist[i] / (rows * cols);
+	}
+	return hist;
+}
+
+std::array<double, 256> BVMat::makeCumulativeHist()
+{
+	auto hist = makeNormalisedHist();
+	for (auto iterator = ++hist.begin(); iterator < hist.end(); iterator++)
+	{
+		*iterator += *(iterator - 1);
+	}
+	return hist;
+}

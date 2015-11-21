@@ -25,4 +25,5 @@ include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
 add_subdirectory(Aufgabe1)
 add_subdirectory(Aufgabe2)
+add_subdirectory(Aufgabe3)
 	
