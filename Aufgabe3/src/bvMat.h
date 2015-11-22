@@ -4,6 +4,8 @@
 #include <opencv2\opencv.hpp>
 
 #include <memory>
+#include <array>
+#include <cmath>
 
 namespace bv
 {
@@ -19,10 +21,51 @@ namespace bv
 		BVMat toCMY();
 		BVMat toYIQ();
 		BVMat toLAB();
-		std::array<std::size_t, 256> makeHist();
-		std::array<double, 256> makeNormalisedHist();
-		std::array<double, 256> makeCumulativeHist();
+		std::array<std::size_t, 256> makeHist() const;
+		std::array<double, 256> makeNormalisedHist() const;
+		std::array<double, 256> makeCumulativeHist() const;
+
+		void histStretch();
+		BVMat gammaCorrection(const double gamma);
+
+	private:
+		template<typename T>
+		auto histStretch(T& g, uchar gmin, uchar gmax, uchar wmin, uchar wmax)
+		{
+			return (g - gmin) * (wmax - wmin) / (gmax - gmin) + wmin;
+		}
+
+		template<typename T>
+		std::pair<T, T> getMinMax(const std::array<T, 256>& hist)
+		{
+			std::pair<uchar, uchar> minMax;
+			for (auto forwardIt = hist.begin(); forwardIt < hist.end(); ++forwardIt)
+			{
+				if (*forwardIt != 0)
+				{
+					minMax.first = forwardIt._Idx;
+					break;
+				}
+			}
+
+			for (auto backwardIt = --hist.end(); backwardIt > hist.begin(); --backwardIt)
+			{
+				if (*backwardIt != 0)
+				{
+					minMax.second = backwardIt._Idx;
+					break;
+				}
+			}
+			return minMax;
+		}
+
+		template<typename T>
+		auto gammaCorrection(T& g, uchar gmin, uchar gmax, uchar wmin, uchar wmax, double gamma)
+		{
+			return (wmax - wmin) * std::pow(((double)(g - gmin) / (double)(gmax - gmin)), gamma) + wmin;
+		}
 	};
 }
+
 
 #endif // BVMAT_H

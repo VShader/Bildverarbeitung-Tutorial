@@ -6,6 +6,7 @@
 using namespace std;
 using namespace bv;
 
+
 void BVMat::shrink(size_t size)
 {
 	// 1. read width and heigh.
@@ -43,9 +44,9 @@ BVMat BVMat::toYIQ()
 		0.595716, -0.274453, -0.321263,
 		0.211456, -0.522591, 0.311135 };
 
-	for (int rowIt = 0; rowIt < yiqMat.rows; rowIt++)
+	for (int colIt = 0; colIt < yiqMat.cols; colIt++)
 	{
-		for (int colIt = 0; colIt < yiqMat.cols; colIt++)
+		for (int rowIt = 0; rowIt < yiqMat.rows; rowIt++)
 		{
 			auto& pixel = yiqMat.at<cv::Vec3d>(rowIt, colIt);
 			auto tmpPixel = pixel;
@@ -64,7 +65,7 @@ BVMat BVMat::toLAB()
 	return labMat;
 }
 
-std::array<std::size_t, 256> BVMat::makeHist()
+std::array<std::size_t, 256> BVMat::makeHist() const
 {
 	//check if grayscale, if not convert.
 	if(this->dims > 2)
@@ -72,9 +73,9 @@ std::array<std::size_t, 256> BVMat::makeHist()
 
 	std::array<std::size_t, 256> hist;
 	hist.fill(0);
-	for (int rowIt = 0; rowIt < this->rows; rowIt++)
+	for (int colIt = 0; colIt < this->cols; colIt++)
 	{
-		for (int colIt = 0; colIt < this->cols; colIt++)
+		for (int rowIt = 0; rowIt < this->rows; rowIt++)
 		{
 			auto& pixel = this->at<uchar>(rowIt, colIt);
 			hist[pixel] += 1;
@@ -83,7 +84,7 @@ std::array<std::size_t, 256> BVMat::makeHist()
 	return hist;
 }
 
-std::array<double, 256> BVMat::makeNormalisedHist()
+std::array<double, 256> BVMat::makeNormalisedHist() const
 {
 	array<double, 256> hist;
 	auto tmpHist = makeHist();
@@ -94,7 +95,7 @@ std::array<double, 256> BVMat::makeNormalisedHist()
 	return hist;
 }
 
-std::array<double, 256> BVMat::makeCumulativeHist()
+std::array<double, 256> BVMat::makeCumulativeHist() const
 {
 	auto hist = makeNormalisedHist();
 	for (auto iterator = ++hist.begin(); iterator < hist.end(); iterator++)
@@ -102,4 +103,44 @@ std::array<double, 256> BVMat::makeCumulativeHist()
 		*iterator += *(iterator - 1);
 	}
 	return hist;
+}
+
+void BVMat::histStretch()
+{
+	constexpr uchar wmin = 0;
+	constexpr uchar wmax = 255;
+
+	auto hist = makeHist();
+	const auto minMax = getMinMax(hist);
+
+	for (int colIt = 0; colIt < this->cols; colIt++)
+	{
+		for (int rowIt = 0; rowIt < this->rows; rowIt++)
+		{
+			auto& pixel = this->at<uchar>(rowIt, colIt);
+			pixel = histStretch(pixel, minMax.first, minMax.second, wmin, wmax);
+		}
+	}
+}
+
+BVMat BVMat::gammaCorrection(const double gamma)
+{
+	cv::Mat gammaMat = this->clone();
+	//this->convertTo(gammaMat, CV_64FC1);
+
+	constexpr uchar wmin = 0;
+	constexpr uchar wmax = 255;
+
+	auto hist = makeHist();
+	const auto minMax = getMinMax(hist);
+
+	for (int colIt = 0; colIt < gammaMat.cols; colIt++)
+	{
+		for (int rowIt = 0; rowIt < gammaMat.rows; rowIt++)
+		{
+			auto& pixel = gammaMat.at<uchar>(rowIt, colIt);
+			pixel = gammaCorrection(pixel, 0, 255, wmin, wmax, gamma);
+		}
+	}
+	return gammaMat;
 }
