@@ -145,24 +145,15 @@ BVMat BVMat::gammaCorrection(const double gamma)
 	return gammaMat;
 }
 
-auto BVMat::conv(const cv::Mat& rhs) const
-{
-	uchar output = 0;
-	for (int col = 0; col < this->cols; col++)
-	{
-		for (int row = 0; row < this->rows; row++)
-		{
-			output += this->at<uchar>(row, col) * rhs.at<uchar>(row, col);
-		}
-	}
-	return output;
-}
+
 
 BVMat BVMat::applyFilter(const BVMat& filter) const
 {
 	// Better zero Mat + insert image
-	BVMat output = this->clone();
-	cv::Mat sourceMat(this->rows + 2, this->cols + 2, this->type(), cv::Scalar(0)); // Zero Mat
+	cv::Mat output;
+	this->convertTo(output, CV_64FC2);
+	cv::Mat input = output.clone();
+	cv::Mat sourceMat(input.rows + 2, input.cols + 2, input.type(), cv::Scalar(0)); // Zero Mat
 	//this->copyTo(sourceMat.rowRange(1, sourceMat.rows - 1), sourceMat.colRange(1, sourceMat.cols - 1));
 	this->copyTo(sourceMat(cv::Rect(1, 1, this->cols , this->rows)));
 	//src.copyTo(dst(Rect(left, top, src.cols, src.rows)));
@@ -171,79 +162,6 @@ BVMat BVMat::applyFilter(const BVMat& filter) const
 	//BVMat output = this->clone();
 	//cv::Mat output = cv::Mat::zeros(this->rows + 1, this->cols + 1, this->type);
 
-	//// 1. corners
-	///*cv::Mat roiUpLeft(*this, cv::Rect(0, 0, 1, 1));
-	//cv::Mat roiUpRight(*this, cv::Rect(this->rows - 1, 0, this->rows, 1));
-	//cv::Mat roiDownLeft(*this, cv::Rect(0, this->cols - 1, 1, this->cols));
-	//cv::Mat roiDownRight(*this, cv::Rect(this->rows - 1, this->cols - 1, this->rows, this->cols));*/
-	//cv::Mat roiUpLeft(*this, cv::Rect(0, 0, 2, 2));
-	//cout << this->at<uchar>(this->rows - 2, 0) << this->at<uchar>(this->rows - 1, 0) << endl << this->at<uchar>(this->rows - 2, 1) << this->at<uchar>(this->rows - 1, 1);
-	//cv::Mat roiUpRight(*this, cv::Rect(this->rows - 2, 0, 2, 2));
-	//cv::Mat roiDownLeft(*this, cv::Rect(0, this->cols - 2, 2, 2));
-	//cv::Mat roiDownRight(*this, cv::Rect(this->rows - 2, this->cols - 2, 2, 2));
-
-	//cv::Mat leftUpperCorner = (cv::Mat_<uchar>(3, 3) << 0, 0, 0,
-	//	0, roiUpLeft.at<uchar>(0, 0), roiUpLeft.at<uchar>(1, 0),
-	//	0, roiUpLeft.at<uchar>(1, 1), roiUpLeft.at<uchar>(1, 1));
-
-	///*cv::Mat rightUpperCorner = (cv::Mat_<uchar>(3, 3) << 0, 0, 0,
-	//	roiUpRight.at<uchar>(0, 0), roiUpRight.at<uchar>(1, 0), 0,
-	//	roiUpRight.at<uchar>(0, 1), roiUpRight.at<uchar>(1, 1), 0);*/
-
-	//cv::Mat leftLowerCorner = (cv::Mat_<uchar>(3, 3) << 0, roiDownLeft.at<uchar>(0, 0), roiDownLeft.at<uchar>(1, 0),
-	//	0, roiDownLeft.at<uchar>(0, 1), roiDownLeft.at<uchar>(1, 1),
-	//	0, 0, 0);
-
-	///*cv::Mat rightLowerCorner = (cv::Mat_<uchar>(3, 3) << roiDownRight.at<uchar>(0, 0), roiDownRight.at<uchar>(1, 0), 0,
-	//	roiDownRight.at<uchar>(0, 1), roiDownRight.at<uchar>(1, 1), 0,
-	//	0, 0, 0);*/
-
-	//output.at<uchar>(0, 0) = filter.conv(leftUpperCorner);
-	////output.at<uchar>(output.rows - 1, 0) = filter.conv(rightUpperCorner);
-	//output.at<uchar>(0, output.cols - 1) = filter.conv(leftLowerCorner);
-	////output.at<uchar>(output.cols - 1, output.rows - 1) = filter.conv(rightLowerCorner);
-
-	//// 2. upper and lower row, left and right column
-	//for (int i = 1; i < this->rows - 1; i++)
-	//{
-	//	cv::Mat roiUp(*this, cv::Rect(i - 1, 0, 2, 3));
-	//	cv::Mat upperRow = (cv::Mat_<uchar>(3, 3) << 0, 0, 0,
-	//		roiUp.at<uchar>(0, 0), roiUp.at<uchar>(1, 0), roiUp.at<uchar>(2, 0),
-	//		roiUp.at<uchar>(0, 1), roiUp.at<uchar>(1, 1), roiUp.at<uchar>(2, 1));
-
-	//	output.at<uchar>(i, 0) = filter.conv(upperRow);
-	//}
-
-	//for (int i = 1; i < this->rows - 1; i++)
-	//{
-	//	cv::Mat roiDown(*this, cv::Rect(i - 1, this->cols - 1, i + 1, this->cols));
-	//	cv::Mat upperRow = (cv::Mat_<uchar>(3, 3) << roiDown.at<uchar>(0, 0), roiDown.at<uchar>(1, 0), roiDown.at<uchar>(2, 0),
-	//		roiDown.at<uchar>(0, 1), roiDown.at<uchar>(1, 1), roiDown.at<uchar>(2, 1),
-	//		0, 0, 0);
-
-	//	output.at<uchar>(i, output.cols) = filter.conv(upperRow);
-	//}
-
-	//for (int i = 1; i < this->cols - 1; i++)
-	//{
-	//	cv::Mat roiLeft(*this, cv::Rect(0, i - 1, 1, i + 1));
-	//	cv::Mat leftCol = (cv::Mat_<uchar>(3, 3) << 0, roiLeft.at<uchar>(0, 0), roiLeft.at<uchar>(1, 0),
-	//		0, roiLeft.at<uchar>(0, 1), roiLeft.at<uchar>(1, 1),
-	//		0, roiLeft.at<uchar>(0, 2), roiLeft.at<uchar>(1, 2));
-
-	//	output.at<uchar>(0, i) = filter.conv(leftCol);
-	//}
-
-	//for (int i = 1; i < this->cols - 1; i++)
-	//{
-	//	cv::Mat roiRight(*this, cv::Rect(this->rows - 1, i - 1, this->rows, i + 1));
-	//	cv::Mat rightCol = (cv::Mat_<uchar>(3, 3) << roiRight.at<uchar>(0, 0), roiRight.at<uchar>(1, 0), 0,
-	//		roiRight.at<uchar>(0, 1), roiRight.at<uchar>(1, 1), 0,
-	//		roiRight.at<uchar>(0, 2), roiRight.at<uchar>(1, 2), 0);
-
-	//	output.at<uchar>(output.rows, i) = filter.conv(rightCol);
-	//}
-
 	// 3. rest
 
 	for (int i = 1; i < output.cols - 1; i++)
@@ -251,7 +169,7 @@ BVMat BVMat::applyFilter(const BVMat& filter) const
 		for (int j = 1; j < output.rows - 1; j++)
 		{
 			cv::Mat roi(sourceMat, cv::Rect(i -1, j -1, 3, 3));
-			output.at<uchar>(j, i) = filter.conv(roi);
+			output.at<double>(j, i) = filter.conv<double>(roi);
 		}
 	}
 

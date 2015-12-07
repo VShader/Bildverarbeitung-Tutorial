@@ -7,6 +7,7 @@ Item {
     width: 550
     height: 400
 
+    property alias image1: image1
     property alias redImage: redImage
     property alias greenImage: greenImage
     property alias blueImage: blueImage
@@ -39,7 +40,7 @@ Item {
                 y: 48
                 width: 208
                 height: 255
-                source: "qrc:/qtquickplugin/images/template_image.png"
+                source: "image://colors/red"
             }
         }
 

@@ -4,10 +4,12 @@ project(Aufgabe3)
 set(src
 	src/aufgabe3.cpp	
 	src/bvMat.cpp
+	src/qcustomplot.cpp
 )
 
 set(header
 	src/bvMat.h
+	src/qcustomplot.h
 )
 
 set(resources ${resources}

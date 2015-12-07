@@ -1,6 +1,7 @@
 import QtQuick 2.4
 import QtQuick.Controls 1.4
 import QtQuick.Layouts 1.2
+//import bv.gui 1.0
 
 ApplicationWindow {
     title: "My Application"
@@ -10,6 +11,7 @@ ApplicationWindow {
 
     RGBchannelsForm
     {
+//        image1.source: Gui.guiImage
         mouseArea1{
             property real prevX: 0
             property real prevY: 0

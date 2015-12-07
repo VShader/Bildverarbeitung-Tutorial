@@ -66,7 +66,22 @@ namespace bv
 			return (wmax - wmin) * std::pow(((double)(g - gmin) / (double)(gmax - gmin)), gamma) + wmin;
 		}
 
-		auto conv(const cv::Mat& rhs) const;
+
+		template<typename T>
+		auto BVMat::conv(const cv::Mat& rhs) const
+		{
+			double output = 0;
+			for (int col = 0; col < this->cols; col++)
+			{
+				for (int row = 0; row < this->rows; row++)
+				{
+					auto a = this->at<T>(row, col);
+					auto b = rhs.at<T>(rhs.rows - 1 - row, rhs.cols - 1 - col);
+					output += this->at<T>(row, col) * rhs.at<T>(rhs.rows - 1 - row, rhs.cols - 1 - col);
+				}
+			}
+			return output;
+		}
 	};
 }
 

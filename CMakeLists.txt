@@ -4,8 +4,9 @@ project(BV_Praktikum)
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED true)
 
+find_package(Doxygen)
 find_package(OpenCV REQUIRED )
-find_package(Qt5 REQUIRED Core Qml Gui Widgets)
+find_package(Qt5 REQUIRED Core Qml Gui Widgets Quick)
 
 include_directories( ${OpenCV_INCLUDE_DIRS} )
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
@@ -26,4 +27,5 @@ include_directories(${CMAKE_CURRENT_BINARY_DIR})
 add_subdirectory(Aufgabe1)
 add_subdirectory(Aufgabe2)
 add_subdirectory(Aufgabe3)
+add_subdirectory(Aufgabe4)
 	
