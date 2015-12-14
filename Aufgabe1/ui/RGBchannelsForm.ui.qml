@@ -40,7 +40,8 @@ Item {
                 y: 48
                 width: 208
                 height: 255
-                source: "image://colors/red"
+                fillMode: Image.PreserveAspectFit
+                source: "image://colors/image"
             }
         }
 
@@ -54,7 +55,7 @@ Item {
                 y: 64
                 width: 100
                 height: 100
-                source: "qrc:/qtquickplugin/images/template_image.png"
+                source: "image://colors/redGray"
             }
 
             Image {
@@ -63,7 +64,7 @@ Item {
                 y: 203
                 width: 100
                 height: 100
-                source: "qrc:/qtquickplugin/images/template_image.png"
+                source: "image://colors/red"
             }
 
             Image {
@@ -72,7 +73,7 @@ Item {
                 y: 64
                 width: 100
                 height: 100
-                source: "qrc:/qtquickplugin/images/template_image.png"
+                source: "image://colors/greenGray"
             }
 
             Image {
@@ -81,7 +82,7 @@ Item {
                 y: 203
                 width: 100
                 height: 100
-                source: "qrc:/qtquickplugin/images/template_image.png"
+                source: "image://colors/green"
             }
 
             Image {
@@ -90,7 +91,7 @@ Item {
                 y: 64
                 width: 100
                 height: 100
-                source: "qrc:/qtquickplugin/images/template_image.png"
+                source: "image://colors/blueGray"
             }
 
             Image {
@@ -99,7 +100,7 @@ Item {
                 y: 203
                 width: 100
                 height: 100
-                source: "qrc:/qtquickplugin/images/template_image.png"
+                source: "image://colors/blue"
             }
 
             Label {
@@ -179,6 +180,36 @@ Item {
             PropertyChanges {
                 target: item2
                 visible: false
+            }
+
+            PropertyChanges {
+                target: redGrayImage
+                fillMode: Image.PreserveAspectFit
+            }
+
+            PropertyChanges {
+                target: greenGrayImage
+                fillMode: Image.PreserveAspectFit
+            }
+
+            PropertyChanges {
+                target: blueGrayImage
+                fillMode: Image.PreserveAspectFit
+            }
+
+            PropertyChanges {
+                target: redImage
+                fillMode: Image.PreserveAspectFit
+            }
+
+            PropertyChanges {
+                target: greenImage
+                fillMode: Image.PreserveAspectFit
+            }
+
+            PropertyChanges {
+                target: blueImage
+                fillMode: Image.PreserveAspectFit
             }
         }
     ]

@@ -11,7 +11,6 @@ ApplicationWindow {
 
     RGBchannelsForm
     {
-//        image1.source: Gui.guiImage
         mouseArea1{
             property real prevX: 0
             property real prevY: 0

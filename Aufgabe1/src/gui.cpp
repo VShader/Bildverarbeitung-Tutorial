@@ -4,32 +4,6 @@
 
 using namespace bv;
 
-QImage Gui::guiImage() const
-{
-    cv::cvtColor(image, image, CV_BGR2RGB);
-    QImage dest((const uchar *)image.data, image.cols, image.rows, image.step, QImage::Format_RGB888);
-    dest.bits();
-    return dest;
-}
-
-
-QImage Gui::guiRedImage() const
-{
-    return m_guiRedImage;
-}
-
-
-QImage Gui::guiGreenImage() const
-{
-    return m_guiGreenImage;
-}
-
-
-QImage Gui::guiBlueImage() const
-{
-    return m_guiBlueImage;
-}
-
 
 /*
  * @param image image to resize
@@ -49,7 +23,7 @@ void Gui::resizeMat(cv::Mat& image, const int max)
 
 void Gui::loadImage()
 {
-    cv::Mat image = cv::imread(std::string(IMAGEPATH) + "Aufgabe1.jpg", 1);
+    image = cv::imread(std::string(IMAGEPATH) + "Aufgabe1.jpg", 1);
     if (!image.data)
     {
         std::cerr << "No image data \n";
@@ -59,38 +33,86 @@ void Gui::loadImage()
     //Aufgabe 1.2 - 1.3
     cv::Mat image512 = image;
     resizeMat(image512, 512);
+	resizeMat(image, 512);
 
     //Aufgabe 1.4
-    MatArray3 bgrGrayImage;
     cv::split(image512, bgrGrayImage.data());
+
+	MatArray3 bgrBlack;
+	bgrBlack.fill(cv::Mat::zeros(cv::Size(bgrGrayImage[0].cols, bgrGrayImage[0].rows), CV_8UC1));
+
+	MatArray3 tmp = bgrBlack;
+	tmp[r] = bgrGrayImage[r];
+	cv::merge(tmp.data(), 3, bgrColourImage[r]);
+
+	tmp = bgrBlack;
+	tmp[g] = bgrGrayImage[g];
+	cv::merge(tmp.data(), 3, bgrColourImage[g]);
+
+	tmp = bgrBlack;
+	tmp[b] = bgrGrayImage[b];
+	cv::merge(tmp.data(), 3, bgrColourImage[b]);
 }
 
 
-QPixmap Gui::requestPixmap(const QString &id, QSize *size, const QSize &requestedSize)
+QImage Gui::requestImage(const QString &id, QSize *size, const QSize &requestedSize)
 {
-    QImage dest(image.data, image.cols, image.rows, image.step, QImage::Format_RGB16);
-    dest.bits();
-
+	QImage dest;
+	if (id == "red")
+	{
+		dest = createView(bgrColourImage[r]);
+	}
+	else if (id == "green")
+	{
+		dest = createView(bgrColourImage[g]);
+	}
+	else if (id == "blue")
+	{
+		dest = createView(bgrColourImage[b]);
+	}
+	else if (id == "redGray")
+	{
+		dest = createView(bgrColourImage[r]);
+	}
+	else if (id == "greenGray")
+	{
+		dest = createView(bgrColourImage[g]);
+	}
+	else if (id == "blueGray")
+	{
+		dest = createView(bgrColourImage[b]);
+	}
+	else
+	{
+		dest = createView(image);
+	}
+	
     if (size)
         *size = QSize(dest.width(), dest.height());
 
     dest.scaled(requestedSize.width(), requestedSize.height());
-
-//    gui.loadImage();
-//    if(id == "image")
-//    {
-
-//    }
     return dest;
+}
 
-//    int width = 100;
-//            int height = 50;
 
-//            if (size)
-//                *size = QSize(width, height);
-//            QPixmap pixmap(requestedSize.width() > 0 ? requestedSize.width() : width,
-//                           requestedSize.height() > 0 ? requestedSize.height() : height);
-//            pixmap.fill(QColor(id).rgba());
+QImage Gui::createView(cv::Mat& input)
+{
+	QImage::Format format = QImage::Format::Format_RGB888;
 
-//            return pixmap;
+	switch (input.type())
+	{
+	case CV_8UC4:
+		format = QImage::Format::Format_RGB32;
+		break;
+		// 8-bit, 3 channel
+	case CV_8UC3:
+		format = QImage::Format::Format_RGB888;
+		break;
+	default:
+		break;
+	}
+
+	QImage dest(input.data, input.cols, input.rows, input.step, format);
+	dest.bits();
+	return dest.rgbSwapped();
 }
